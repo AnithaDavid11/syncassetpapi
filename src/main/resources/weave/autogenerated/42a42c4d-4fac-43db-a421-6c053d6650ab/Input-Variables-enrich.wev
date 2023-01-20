@@ -1,0 +1,87 @@
+%dw 2.0
+
+type auto_42a42c4d_4fac_43db_a421_6c053d6650ab_Input_Variables_enrich = {|
+  id: Number, 
+  identifier: String, 
+  cultures: Array<String>, 
+  properties: {|
+    DRM_RightsProfile_Name: String, 
+    DRM_RightsProfile_StartDate: String, 
+    DRM_RightsProfile_TimeType: {|
+      identifier: String, 
+      labels: {| "en-US": String |}
+    |}, 
+    DRM_RightsProfile_Duration: Null, 
+    DRM_RightsProfile_ExpirationDate: Null, 
+    ChannelOtherDetails: String, 
+    DRM_RightsProfile_YearCopyright: Null, 
+    DRM_RightsProfile_AdaptationRights: Null, 
+    DRM_RightsProfile_RightsNotes: Null, 
+    DRM_RightsProfile_CalculatedExpirationDate: String, 
+    DRM_RightsProfile_Type: Null
+  |}, 
+  relations: {|
+    GeographyToRightsProfile: {|
+      parents: Array<{|        properties: {| TaxonomyLabel: {| "en-US": String |} |},         href: String      |}>, 
+      inherits_security: Boolean, 
+      self: {| href: String |}
+    |}, 
+    DRM_Media_MediaToRightsProfile: {|
+      parents: Array<{|        properties: {| DRM_Media_DisplayName: {| "en-US": String |} |},         href: String      |}>, 
+      inherits_security: Boolean, 
+      self: {| href: String |}
+    |}, 
+    DRM_Contract_ContractToRightsProfile: {| href: String |}, 
+    DRM_Subject_SubjectToRightsProfile: {| href: String |}, 
+    DRM_RightsProfile_RightsProfileToAsset: {| href: String |}
+  |}, 
+  created_by: {|
+    href: String, 
+    title: String
+  |}, 
+  created_on: String, 
+  modified_by: {|
+    href: String, 
+    title: String
+  |}, 
+  modified_on: String, 
+  entitydefinition: {|
+    href: String, 
+    title: String
+  |}, 
+  copy: {|
+    href: String, 
+    title: String
+  |}, 
+  permissions: {|
+    href: String, 
+    title: String
+  |}, 
+  lifecycle: {|
+    href: String, 
+    title: String
+  |}, 
+  saved_selections: {|
+    href: String, 
+    title: String
+  |}, 
+  roles: {|
+    href: String, 
+    title: String
+  |}, 
+  annotations: {|
+    href: String, 
+    title: String
+  |}, 
+  is_root_taxonomy_item: Boolean, 
+  is_path_root: Boolean, 
+  inherits_security: Boolean, 
+  is_system_owned: Boolean, 
+  version: Number, 
+  self: {| href: String |}, 
+  related_paths: {|
+    GeographyToRightsProfile: Array<Array<{|      values: {| "en-US": String |},       entity: String,       definition: String    |}>>, 
+    DRM_Media_MediaToRightsProfile: Array<Array<{|      values: {| "en-US": String |},       entity: String,       definition: String    |}>>
+  |}
+|}
+

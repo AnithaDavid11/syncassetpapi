@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<sub-flow name="assetbyidsubflow" doc:id="b2ad1657-6a15-4187-a9d0-e94d0c05967a" >
+		<foreach doc:name="For Each" doc:id="6fa2031f-1b56-436d-9b17-3bc6ab1ec0d8" >
+			<set-variable value="#[payload.id]" doc:name="Set Variable" doc:id="5ced34aa-baba-48b1-a305-ea4a49c1df80" variableName="id" />
+			<http:request method="GET" doc:name="Requesting sitecore getasset" doc:id="9e7ae204-4f2f-4f0c-ae49-01685dfc206f" config-ref="HTTP_Request_configuration" path="/entities/{id}">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"id" : vars.id
+}]]]></http:uri-params>
+		</http:request>
+			<set-variable value="#[payload]" doc:name="Set Variable" doc:id="25c69d93-a65a-4019-bd57-4d324e10ac54" variableName="assetbyid" />
+			<flow-ref doc:name="Flow Reference" doc:id="2be53a6d-8266-4395-b138-c495b7caacfa" name="enricheachassetsubflow"/>
+		</foreach>
+	</sub-flow>
+	<sub-flow name="enricheachassetsubflow" doc:id="755dd498-1670-48b8-a935-4817d6b3bf84" >
+		<http:request method="GET" doc:name="Requesting sitecore getasset" doc:id="fc880ccc-4fed-4863-83d8-f862c3c5a557" config-ref="HTTP_Request_configuration" path="/entities/1861637"/>
+		<ee:transform doc:name="Transform Message" doc:id="16e0b4a5-6774-4e03-895c-1e70f3ee1cd9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "id": 1861637,
+    "identifier": "vsHkFQTE_kOS8NoZ487Vew",
+    "cultures": [
+        "en-US"
+    ],
+    "properties": {
+        "DRM_RightsProfile_Name": "DCH Unrestricted",
+        "DRM_RightsProfile_StartDate": "2018-06-01T06:02:35Z",
+        "DRM_RightsProfile_TimeType": {
+            "identifier": "Perpetual",
+            "labels": {
+                "en-US": "Perpetual"
+            }
+        },
+        "DRM_RightsProfile_Duration": null,
+        "DRM_RightsProfile_ExpirationDate": null,
+        "ChannelOtherDetails": "Global rights in Perpetuity. Unrestricted usage across all media.",
+        "DRM_RightsProfile_YearCopyright": null,
+        "DRM_RightsProfile_AdaptationRights": null,
+        "DRM_RightsProfile_RightsNotes": null,
+        "DRM_RightsProfile_CalculatedExpirationDate": "9999-12-31T23:59:59.999Z",
+        "DRM_RightsProfile_Type": null
+    },
+    "relations": {
+        "GeographyToRightsProfile": {
+            "parents": [
+                {
+                    "properties": {
+                        "TaxonomyLabel": {
+                            "en-US": "Global"
+                        }
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/20489"
+                }
+            ],
+            "inherits_security": true,
+            "self": {
+                "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/relations/GeographyToRightsProfile"
+            }
+        },
+        "DRM_Media_MediaToRightsProfile": {
+            "parents": [
+                {
+                    "properties": {
+                        "DRM_Media_DisplayName": {
+                            "en-US": "ATL (TV, Radio, Print, Outdoor, Digital, Social Media)"
+                        }
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/22493"
+                },
+                {
+                    "properties": {
+                        "DRM_Media_DisplayName": {
+                            "en-US": "BTL (POS, In-store, On-Premise, Off-Premise)"
+                        }
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/22494"
+                },
+                {
+                    "properties": {
+                        "DRM_Media_DisplayName": {
+                            "en-US": "Other (please provide information in Comments field)"
+                        }
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/22495"
+                }
+            ],
+            "inherits_security": true,
+            "self": {
+                "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/relations/DRM.Media.MediaToRightsProfile"
+            }
+        },
+        "DRM_Contract_ContractToRightsProfile": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/relations/DRM.Contract.ContractToRightsProfile"
+        },
+        "DRM_Subject_SubjectToRightsProfile": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/relations/DRM.Subject.SubjectToRightsProfile"
+        },
+        "DRM_RightsProfile_RightsProfileToAsset": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/relations/DRM.RightsProfile.RightsProfileToAsset"
+        }
+    },
+    "created_by": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/23339",
+        "title": "The user who created the entity"
+    },
+    "created_on": "2018-06-25T06:03:33.258Z",
+    "modified_by": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941",
+        "title": "The user who last modified the entity"
+    },
+    "modified_on": "2020-03-10T17:05:52.471Z",
+    "entitydefinition": {
+        "href": "https://31-qa.diageocontenthub.com/api/entitydefinitions/M.DRM.RightsProfile",
+        "title": "The entity definition for this entity"
+    },
+    "copy": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/copy",
+        "title": "Copy this entity"
+    },
+    "permissions": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/permissions",
+        "title": "The permissions on this entity"
+    },
+    "lifecycle": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/lifecycle",
+        "title": "The lifecycle action for this entity."
+    },
+    "saved_selections": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/savedselections",
+        "title": "The saved selections this entity belongs to"
+    },
+    "roles": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/roles",
+        "title": "Roles for this entity"
+    },
+    "annotations": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637/annotations",
+        "title": "Annotations for this entity"
+    },
+    "is_root_taxonomy_item": false,
+    "is_path_root": false,
+    "inherits_security": true,
+    "is_system_owned": false,
+    "version": 7,
+    "self": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/1861637"
+    },
+    "related_paths": {
+        "GeographyToRightsProfile": [
+            [
+                {
+                    "values": {
+                        "en-US": "Global"
+                    },
+                    "entity": "https://31-qa.diageocontenthub.com/api/entities/20489",
+                    "definition": "https://31-qa.diageocontenthub.com/api/entitydefinitions/Diageo.Geography"
+                }
+            ]
+        ],
+        "DRM_Media_MediaToRightsProfile": [
+            [
+                {
+                    "values": {
+                        "en-US": "ATL (TV, Radio, Print, Outdoor, Digital, Social Media)"
+                    },
+                    "entity": "https://31-qa.diageocontenthub.com/api/entities/22493",
+                    "definition": "https://31-qa.diageocontenthub.com/api/entitydefinitions/M.DRM.Media"
+                }
+            ],
+            [
+                {
+                    "values": {
+                        "en-US": "BTL (POS, In-store, On-Premise, Off-Premise)"
+                    },
+                    "entity": "https://31-qa.diageocontenthub.com/api/entities/22494",
+                    "definition": "https://31-qa.diageocontenthub.com/api/entitydefinitions/M.DRM.Media"
+                }
+            ],
+            [
+                {
+                    "values": {
+                        "en-US": "Other (please provide information in Comments field)"
+                    },
+                    "entity": "https://31-qa.diageocontenthub.com/api/entities/22495",
+                    "definition": "https://31-qa.diageocontenthub.com/api/entitydefinitions/M.DRM.Media"
+                }
+            ]
+        ]
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="d1b0622f-524e-460e-8586-996b9872fc14" variableName="enrich"/>
+		<http:request method="GET" doc:name="Requesting sitecore createdby" doc:id="39f3d159-6056-44ff-bccb-73ce6f4b3948" config-ref="HTTP_Request_configuration" path="/createdby/6"/>
+		<ee:transform doc:name="Transform Message" doc:id="cadade2f-76e1-4932-a3f9-0568e6193f54" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "id": 6,
+    "identifier": "User.Administrator",
+    "cultures": [
+        "en-US"
+    ],
+    "properties": {
+        "Username": "Administrator",
+        "UserGroupConfiguration": null,
+        "HasToken": true,
+        "EmailConfirmationPending": false,
+        "LockoutEndDate": null,
+        "AccessFailedCount": 0,
+        "IsRestricted": null,
+        "AdditionalInfo": null,
+        "LastLoginDateTime": "2021-07-26T08:32:46.141Z",
+        "LastPasswordChangeDateTime": "2019-10-30T08:53:56.712Z"
+    },
+    "relations": {
+        "UserToUserProfile": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToUserProfile"
+        },
+        "UserGroupToUser": {
+            "parents": [
+                {
+                    "properties": {
+                        "GroupName": "Administrators"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/3"
+                },
+                {
+                    "properties": {
+                        "GroupName": "Everyone"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/4"
+                },
+                {
+                    "properties": {
+                        "GroupName": "M.Builtin.Project.Everyone"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/4313"
+                }
+            ],
+            "inherits_security": true,
+            "self": {
+                "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserGroupToUser"
+            }
+        },
+        "UserToUserAgreement": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToUserAgreement"
+        },
+        "UserToExternalLogin": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToExternalLogin"
+        },
+        "UserToRole": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToRole"
+        },
+        "SavedSelectionToUser": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/SavedSelectionToUser"
+        },
+        "UserTypeToUser": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserTypeToUser"
+        },
+        "UserToNotification": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToNotification"
+        },
+        "UserOwnerToBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserOwnerToBlock"
+        },
+        "UserToTask": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/UserToTask"
+        },
+        "SelectedUserToTask": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/SelectedUserToTask"
+        },
+        "AssignedUserToState": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/AssignedUserToState"
+        },
+        "StateUserToMProjectBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/StateUserToMProjectBlock"
+        },
+        "AssignedUserToMProjectBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/6/relations/AssignedUserToMProjectBlock"
+        }
+    },
+    "created_on": "2017-12-04T12:41:59.93Z",
+    "modified_by": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6",
+        "title": "The user who last modified the entity"
+    },
+    "modified_on": "2021-07-26T08:32:46.155Z",
+    "entitydefinition": {
+        "href": "https://31-qa.diageocontenthub.com/api/entitydefinitions/User",
+        "title": "The entity definition for this entity"
+    },
+    "copy": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/copy",
+        "title": "Copy this entity"
+    },
+    "permissions": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/permissions",
+        "title": "The permissions on this entity"
+    },
+    "lifecycle": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/lifecycle",
+        "title": "The lifecycle action for this entity."
+    },
+    "saved_selections": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/savedselections",
+        "title": "The saved selections this entity belongs to"
+    },
+    "roles": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/roles",
+        "title": "Roles for this entity"
+    },
+    "annotations": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6/annotations",
+        "title": "Annotations for this entity"
+    },
+    "is_root_taxonomy_item": true,
+    "is_path_root": false,
+    "inherits_security": true,
+    "is_system_owned": true,
+    "version": 13489,
+    "self": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6"
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="50c99c81-c96e-43cb-ae01-deeda0f63692" variableName="created"/>
+		<http:request method="GET" doc:name="Requesting sitecore modifiedby" doc:id="22416af0-ac9e-4196-8f51-4dc55b3b072d" config-ref="HTTP_Request_configuration" path="/modifiedby/120941"/>
+		<ee:transform doc:name="Transform Message" doc:id="6049501b-97ed-4a07-b5f5-e5499d1c52f6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "id": 120941,
+    "identifier": "-ZlVUz4nwkimIe8aihqcFA",
+    "cultures": [
+        "en-US"
+    ],
+    "properties": {
+        "Username": "Brett.Lewis@diageo.com",
+        "UserGroupConfiguration": {
+            "combine_method": "Any",
+            "user_group_ids": [
+                3,
+                4483370,
+                4,
+                4313,
+                21130
+            ],
+            "children": []
+        },
+        "HasToken": true,
+        "EmailConfirmationPending": false,
+        "LockoutEndDate": null,
+        "AccessFailedCount": 0,
+        "IsRestricted": false,
+        "AdditionalInfo": null,
+        "LastLoginDateTime": "2021-07-26T08:05:27.573Z",
+        "LastPasswordChangeDateTime": null
+    },
+    "relations": {
+        "UserToUserProfile": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToUserProfile"
+        },
+        "UserGroupToUser": {
+            "parents": [
+                {
+                    "properties": {
+                        "GroupName": "Administrators"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/3"
+                },
+                {
+                    "properties": {
+                        "GroupName": "Diageo Everyone"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/4483370"
+                },
+                {
+                    "properties": {
+                        "GroupName": "Everyone"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/4"
+                },
+                {
+                    "properties": {
+                        "GroupName": "M.Builtin.Project.Everyone"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/4313"
+                },
+                {
+                    "properties": {
+                        "GroupName": "Project Owner"
+                    },
+                    "href": "https://31-qa.diageocontenthub.com/api/entities/21130"
+                }
+            ],
+            "inherits_security": true,
+            "self": {
+                "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserGroupToUser"
+            }
+        },
+        "UserToUserAgreement": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToUserAgreement"
+        },
+        "UserToExternalLogin": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToExternalLogin"
+        },
+        "UserToRole": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToRole"
+        },
+        "SavedSelectionToUser": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/SavedSelectionToUser"
+        },
+        "UserTypeToUser": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserTypeToUser"
+        },
+        "UserToNotification": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToNotification"
+        },
+        "UserOwnerToBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserOwnerToBlock"
+        },
+        "UserToTask": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/UserToTask"
+        },
+        "SelectedUserToTask": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/SelectedUserToTask"
+        },
+        "AssignedUserToState": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/AssignedUserToState"
+        },
+        "StateUserToMProjectBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/StateUserToMProjectBlock"
+        },
+        "AssignedUserToMProjectBlock": {
+            "href": "https://31-qa.diageocontenthub.com/api/entities/120941/relations/AssignedUserToMProjectBlock"
+        }
+    },
+    "created_by": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6",
+        "title": "The user who created the entity"
+    },
+    "created_on": "2017-12-14T11:01:29.515Z",
+    "modified_by": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/6",
+        "title": "The user who last modified the entity"
+    },
+    "modified_on": "2021-07-26T08:05:27.584Z",
+    "entitydefinition": {
+        "href": "https://31-qa.diageocontenthub.com/api/entitydefinitions/User",
+        "title": "The entity definition for this entity"
+    },
+    "copy": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/copy",
+        "title": "Copy this entity"
+    },
+    "permissions": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/permissions",
+        "title": "The permissions on this entity"
+    },
+    "lifecycle": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/lifecycle",
+        "title": "The lifecycle action for this entity."
+    },
+    "saved_selections": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/savedselections",
+        "title": "The saved selections this entity belongs to"
+    },
+    "roles": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/roles",
+        "title": "Roles for this entity"
+    },
+    "annotations": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941/annotations",
+        "title": "Annotations for this entity"
+    },
+    "is_root_taxonomy_item": true,
+    "is_path_root": false,
+    "inherits_security": true,
+    "is_system_owned": true,
+    "version": 1896,
+    "self": {
+        "href": "https://31-qa.diageocontenthub.com/api/entities/120941"
+    },
+    "renditions": {
+        "downloadOriginal": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-8de2557e38ab4587b898e9daf4ced919?intent=Download&expires=2021-07-28T09%3A57%3A09.2010362%2B00%3A00&entityid=714730&userid=4634315&rendition=downloadOriginal&signature=3efdYIFqRNY"
+            }
+        ],
+        "downloadAlternative": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-8de2557e38ab4587b898e9daf4ced919?intent=Download&expires=2021-07-27T10%3A17%3A09.2010362%2B00%3A00&entityid=714730&userid=4634315&rendition=downloadAlternative&signature=DKyKKpx4Ci8"
+            }
+        ],
+        "metadata": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-6642350c9a3445d48e30f065f9a9e6dc?expires=2021-07-27T10%3A17%3A09.1296874%2B00%3A00&entityid=714730&userid=4634315&rendition=metadata&signature=J09Kz-DY1l0"
+            }
+        ],
+        "preview": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-9396f2909a344b469dc0316d2fc7df92?expires=2021-07-27T10%3A17%3A09.2010362%2B00%3A00&entityid=714730&userid=4634315&rendition=preview&signature=Oka1yVpnBH4"
+            }
+        ],
+        "downloadPreview": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-a547d57c166447b6984eb715820e9d7d?intent=Download&expires=2021-07-27T10%3A17%3A09.2010362%2B00%3A00&entityid=714730&userid=4634315&rendition=downloadPreview&signature=Lwnwc_s5q3w"
+            }
+        ],
+        "thumbnail": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-bd13a043e73d4ff59720de23090fb364?expires=2021-07-27T10%3A17%3A09.1366875%2B00%3A00&entityid=714730&userid=4634315&rendition=thumbnail&signature=CAQNI1pdFfE"
+            }
+        ],
+        "bigthumbnail": [
+            {
+                "href": "https://delivery-qa.diageocontenthub.com/api/delivery/local-789d550c4872401c878c91e428bcb4eb?expires=2021-07-27T10%3A17%3A09.1376890%2B00%3A00&entityid=714730&userid=4634315&rendition=bigthumbnail&signature=MqFIKdqroGs"
+            }
+        ]
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="c85a01de-34a5-4e10-b866-59cab6e6f72f" variableName="modified"/>
+		<set-payload value="#[vars.assetbyid]" doc:name="Set Payload" doc:id="00df3c67-0204-4a96-9cb2-c5c7470f9670" />
+		<ee:transform doc:name="Transform Message" doc:id="fc6f7684-8e67-4bd0-935d-4bd64e8cda9f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import update from dw::util::Values
+---
+payload map($ update
+	{
+		case properties at .relations.DRM_Restricted_RestrictedToAsset.parent.properties -> vars.enrich.properties ++ {"id" : vars.enrich.id,
+			"identifier" : vars.enrich.identifier
+		}
+		case title at .created_by.title -> vars.created.properties ++ {"id" : vars.created.id,
+	    	"identifier" : vars.created.identifier
+	    }
+	    case title at .modified_by.title -> vars.modified.properties ++ {"id" : vars.modified.id,
+	    	"identifier" : vars.modified.identifier
+	    } })
+	       
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="2d678d8f-2bfa-4591-8306-3c771780e155" name="storeinmongodb"/>
+	</sub-flow>
+	<sub-flow name="storeinmongodb" doc:id="6886e5e4-97b0-4abe-b3a5-691db85d20d6" >
+		<ee:transform doc:name="Transform Message" doc:id="3f57a806-8007-4cf1-b699-21163b44eae0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import update from dw::util::Values
+var A =  payload map($.relations - 'CategoryToAsset' - 'AssetTypeToAsset' - 'CreatorMarketToAsset' - 'CreatedForMarketToAsset' - 'AvailableToToAsset' - 'MasterFile') 
+ ---
+ payload map($  update {
+    case relations at .relations  -> A
+    }) - 'copy' - 'permissions' - 'lifecycle' - 'annotations' - 'collections' - 'is_root_taxonomy_item' - 'is_path_root' - 'inherits_security' - 'is_system_owned' - 'full' - 'self']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="3659cc44-9525-4a8a-adee-7f3652f88377" variableName="fullasset"/>
+		<ee:transform doc:name="Transform Message" doc:id="18e09ee6-0809-4a11-9eb6-08334661bce9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+  "assetId" : payload.id,
+  "assetMimeType" : payload.properties.MIMEType,
+  "assetName" : payload.properties.FileName,
+  "status": "New",
+  "expirationDate" : payload.relations[0].DRM_RightsProfile_RightsProfileToAsset
+ .parents[0].properties.DRM_RightsProfile_CalculatedExpirationDate,
+     "assetPayload" :payload,
+  "createDate" : payload.properties.ApprovalDate,
+  "updateDate" : now()
+	
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request to mongodb storeasset" doc:id="2ed658c4-7312-4b87-b651-335566187e6e" config-ref="HTTP_Request_configuration1" path="/apimongo/storeasset" />
+		<flow-ref doc:name="Flow Reference" doc:id="43f53571-ed84-450e-8e05-ff754f78fff7" name="addings3andupdateasset"/>
+	</sub-flow>
+	<sub-flow name="addings3andupdateasset" doc:id="42a42c4d-4fac-43db-a421-6c053d6650ab" >
+		<set-payload value="#[vars.fullasset]" doc:name="Set Payload" doc:id="f3b44272-0147-48f0-9f4a-53081166134f" />
+		<foreach doc:name="For Each" doc:id="7b62059e-4df4-4463-81c9-2507f85abe24" >
+			<ee:transform doc:name="Transform Message" doc:id="df46f41c-84cf-4cc5-b636-c86553eb70d2">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "assetId" : vars.fullasset.id[0],
+  "assetMimeType" : vars.fullasset.properties.MIMEType[0],
+  "assetName" : vars.fullasset.properties.FileName[0],
+  "status": "New",
+  "expirationDate" : (vars.fullasset[0].relations[0].DRM_RightsProfile_RightsProfileToAsset
+ .parents[0].properties.DRM_RightsProfile_CalculatedExpirationDate) default  " ", 
+   "assetPayload" :vars.fullasset[0],
+  "createDate" : vars.fullasset.properties.ApprovalDate[0],
+  "updateDate" : now(),
+  "ObjectKeys" : "metadata/" ++ vars.fullasset[0].id as Number ++ "/" ++ vars.fullasset[0].properties.FileName  as String++ ".json"
+  
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<http:request method="POST" doc:name="Requesting s3 publish asset" doc:id="cc55584a-977d-4023-ad89-6e573186ae0c" config-ref="HTTP_Request_configuration1" path="/apis3/publishasset" />
+		</foreach>
+		<flow-ref doc:name="Flow Reference" doc:id="91449dee-9d38-45e9-8286-a3f37e651b38" name="updateassettositecore"/>
+	</sub-flow>
+	<sub-flow name="updateassettositecore" doc:id="57845e1f-5eab-4eac-acce-340e22684194" >
+		<set-payload value="#[vars.fullasset]" doc:name="Set Payload" doc:id="20802a69-fb57-435b-b6e6-1cb2344f7b41" />
+		<foreach doc:name="For Each" doc:id="51edf429-d8cf-4ac5-8b59-a119fd56acd5" >
+			<ee:transform doc:name="Transform Message" doc:id="0fe6d12c-a150-4e56-acea-a4768e421eab">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"assetId" : payload.id,
+"status": "published",
+"ObjectKeys" : "metadata/" ++ vars.fullasset[0].id as Number ++ "/" ++ vars.fullasset[0].properties.FileName  as String++ ".json"}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<http:request method="PUT" doc:name="Requesting update documents mongo" doc:id="c0f35a96-6e23-47ac-9570-8ac8354712a8" config-ref="HTTP_Request_configuration1" path="/apimongo/updateasset" />
+		</foreach>
+		<http:request method="GET" doc:name="Request" doc:id="69531fc9-fc80-42e8-9e31-00633262fa04" config-ref="HTTP_Request_configuration" path="/entities/4668750"/>
+		<ee:transform doc:name="Transform Message" doc:id="59d6deb3-5bc3-451e-afed-0e7f09090ae3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7853ca81-a925-4866-a695-1ad032f01437" message="Enriched Assets are updated to sitecore"/>
+	</sub-flow>
+	<flow name="paginationflow" doc:id="b9dabe75-6640-48de-8421-e553c10100dc" >
+		<http:listener doc:name="Listener" doc:id="96af9fc3-69d4-4c27-8aa6-896806c90d6b" path="/syncpapi" config-ref="HTTP_Listener_config_Domain"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="16cc3b95-bcff-4ad9-975b-22c29d924e7d" />
+		<http:request method="POST" doc:name="Request" doc:id="0289645d-4639-413d-be04-825d11816d9b" config-ref="HTTP_Request_configuration" path="/search"/>
+		<set-variable value="#[payload.skip]" doc:name="Set Variable" doc:id="483bae5a-df7a-4e25-bb06-459f89a935aa" variableName="A"/>
+		<set-variable value="#[payload.take]" doc:name="Set Variable" doc:id="1168adb2-20e0-4b15-b709-afbe45c65daa" variableName="B"/>
+		<choice doc:name="Choice" doc:id="4b91ce5a-0a22-4e05-a573-c2038bae4b55">
+			<when expression="#[payload.totalItemCount &lt;= payload.skip]">
+				<logger level="INFO" doc:name="Logger" doc:id="47b8abc7-26b4-4edf-8ab2-fa72ab0fe154" message='#[payload]' />
+			</when>
+			<when expression="#[payload.totalItemCount &gt; payload.skip]">
+					<set-payload value="#[payload.items]" doc:name="Set Payload" doc:id="72cc8eaa-667a-4270-adf5-8204fc65ba3f" />
+				<flow-ref doc:name="Flow Reference" doc:id="1c9f93ec-ab55-4ce5-8735-63b21f0c32d6" name="assetbyidsubflow" />
+				<ee:transform doc:name="Transform Message" doc:id="d3531956-b55a-4f93-a406-d4485f7244eb">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+ 			 "defaults": "DCHIntegrationsSearchConfiguration",
+ 			 "culture": "en-US",
+ 			 "skip": vars.A + vars.B,
+  			"take": vars.B,
+  			"query": "",
+  			"filters": [],
+  			"fulltext": [],
+ 			 "view": "grid",
+ 		 	"sorting": {
+    				"field": "modifiedon",
+    				"asc": false
+  			    	}
+}
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="302fc868-2ba0-4f11-9b40-92a17601e703" name="paginationflow"/>
+			</when>
+		</choice>
+	</flow>
+</mule>
